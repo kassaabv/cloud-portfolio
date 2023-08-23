@@ -34,6 +34,35 @@ resource "aws_subnet" "public_subnet_az1" {
   }
 }
 
+# Create a network ACL for the public subnet az1
+resource "aws_network_acl" "public_subnet_az1_acl" {
+  vpc_id = aws_vpc.vpc.id
+
+  # Inbound rules
+  ingress {
+    from_port   = 443  # HTTPS port
+    to_port     = 443  # HTTPS port
+    protocol    = "tcp"
+    cidr_block  = "0.0.0.0/0"
+    rule_action = "allow"
+  }
+
+  # Outbound rules
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"  # All traffic
+    cidr_block  = "0.0.0.0/0"
+    rule_action = "allow"
+  }
+}
+
+# Associate NACL with the public subnet az1
+resource "aws_subnet_network_acl_association" "public_subnet_az1_nacl_assoc" {
+  subnet_id      = aws_subnet.public_subnet_az1.id
+  network_acl_id = aws_network_acl.public_subnet_az1_acl.id
+}
+
 # create public subnet az2
 resource "aws_subnet" "public_subnet_az2" {
   vpc_id                  = aws_vpc.vpc.id
@@ -44,6 +73,35 @@ resource "aws_subnet" "public_subnet_az2" {
   tags      = {
     Name    = "public_subnet_az2"
   }
+}
+
+# Create a network ACL for the public subnet az2
+resource "aws_network_acl" "public_subnet_az2_acl" {
+  vpc_id = aws_vpc.vpc.id
+
+  # Inbound rules
+  ingress {
+    from_port   = 443  # HTTPS port
+    to_port     = 443  # HTTPS port
+    protocol    = "tcp"
+    cidr_block  = "0.0.0.0/0"
+    rule_action = "allow"
+  }
+
+  # Outbound rules
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"  # All traffic
+    cidr_block  = "0.0.0.0/0"
+    rule_action = "allow"
+  }
+}
+
+# Associate NACL with the public subnet az2
+resource "aws_subnet_network_acl_association" "public_subnet_az2_nacl_assoc" {
+  subnet_id      = aws_subnet.public_subnet_az2.id
+  network_acl_id = aws_network_acl.public_subnet_az2_acl.id
 }
 
 # create route table and add public route
