@@ -4,7 +4,7 @@ provider "aws" {
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "my-rds-subnet-group"
-  subnet_ids = ["subnet-example1, "subnet-example2"]  
+  subnet_ids = ["subnet-example1", "subnet-example2"]  
 }
 
 resource "aws_db_instance" "mysql_rds" {
@@ -17,10 +17,15 @@ resource "aws_db_instance" "mysql_rds" {
   username             = "admin"
   password             = "examplepassword"
   parameter_group_name = "default.mysql5.7"
-  skip_final_snapshot = true
+  skip_final_snapshot  = true
   db_subnet_group_name = aws_db_subnet_group.rds_subnet_group.name
 
-  vpc_security_group_ids = [aws_security_group.rds_sg.id] 
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+
+  s3_import {
+    bucket_name = aws_s3_bucket.my_bucket.id
+    bucket_prefix = "rds-snapshots/"
+  }
 
   tags = {
     Name = "ExampleMySQLRDSInstance"
@@ -43,5 +48,18 @@ resource "aws_security_group" "rds_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_s3_bucket" "my_bucket" {
+  bucket = "mys3bucket"  # Replace with your desired bucket name
+  acl    = "private"
+
+  versioning {
+    enabled = true 
+  }
+
+  tags = {
+    Name = "MyS3Bucket"
   }
 }
