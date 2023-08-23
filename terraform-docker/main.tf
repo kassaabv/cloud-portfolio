@@ -9,14 +9,14 @@ terraform {
 
 provider "docker" {}
 
-resource "docker_image" "nginx" {
+resource "docker_image" "nginx_image" {
   name         = "nginx:latest"
   keep_locally = false
 }
 
-resource "docker_container" "nginx" {
-  image = docker_image.nginx.image_id
-  name  = "practice"
+resource "docker_container" "nginx_container" {
+  image = docker_image.nginx_image.image_id
+  name  = "practice_nginx"  # Choose a unique name for the container
 
   ports {
     internal = 80
